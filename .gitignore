@@ -1,2 +1,5 @@
 .eggs
 .vscode
+src/models/
+notebooks/.ipynb_checkpoints
+src/ner_accidente.egg-info
