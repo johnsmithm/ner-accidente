@@ -23,11 +23,11 @@ def generate_cloud(data_frame):
     plt.show()
 
 # pass it a list so that it generate an (x,y) plot where x is the words and y is the occurance of that word
-def plot_word_freq(text_to_plot, title='Placeholder title'):
+def plot_word_freq(text_to_plot, title='Placeholder title', num_words=55):
     fd2 = nltk.FreqDist(word for word in text_to_plot)
     print('lenghts of the text_to_plot is',len(text_to_plot))
-    x=[fd2.most_common(55)[i][0] for i in range(55)]
-    y=[fd2.most_common(55)[i][1] for i in range(55)]
+    x=[fd2.most_common(num_words)[i][0] for i in range(num_words)]
+    y=[fd2.most_common(num_words)[i][1] for i in range(num_words)]
     #palette=sns.color_palette("PuBuGn_d",100)
     palette= sns.light_palette("crimson",100,reverse=True)
     plt.figure(figsize=(65,25))

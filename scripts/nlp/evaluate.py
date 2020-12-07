@@ -35,13 +35,13 @@ def check_accuracy(test_list, model, test_set_name='PLACEHOLDER'):
             tuple_ent =(ent.start_char, ent.end_char, ent.label_)
             ent_model_results.append(tuple_ent)
         if entities_localtion == ent_model_results:
+
             correct += 1
         else:
             # False positive
             wrong_guess = list(set(ent_model_results).difference(entities_localtion))
             # False negative
             didnt_find = list(set(entities_localtion).difference(ent_model_results))
-            
             dict_phrase_issue[wrong] = test_list[i][0]
             dict_issue_location[wrong] = wrong_guess
             dict_issue_not_found[wrong] = didnt_find
@@ -52,6 +52,7 @@ def check_accuracy(test_list, model, test_set_name='PLACEHOLDER'):
     print(50*'-')
     return dict_phrase_issue, dict_issue_location, dict_issue_not_found
 
+""" Extract the possition 2,3 and 4,5 from the  [(2,3,'POS'), (4,5,'POS')]"""
 def extract_pos(column):
     single_positions = []
     if len(column) == 1:
@@ -66,7 +67,7 @@ def extract_pos(column):
         column = multiple_positions
     return column
 
-# Extract the words based on their position within the string
+""" Extract the words based on their position within the string """
 def extract_word(position):    
     whole_phrase = position[0]
     word_position = position[1]

@@ -16,14 +16,16 @@ from pathlib import Path
 import spacy
 from spacy.util import minibatch, compounding
 
-
+# Use built-in "ner" pipeline components
+nlp = spacy.load("ro_core_news_lg")
+ner = nlp.get_pipe("ner")
 
 def main(model=None,TRAIN_DATA=None , output_dir=None, n_iter=100):
-    # Use built-in "ner" pipeline components
-    nlp = spacy.load("ro_core_news_lg")
-    ner = nlp.get_pipe("ner")
+    
+    
+    
 
-    # add labels
+    # add labelsmodel
     for _, annotations in TRAIN_DATA:
         for ent in annotations.get("entities"):
             ner.add_label(ent[2])
@@ -55,12 +57,6 @@ def main(model=None,TRAIN_DATA=None , output_dir=None, n_iter=100):
                     losses=losses,
                 )
             print("Losses", losses)
-
-    # test the trained model
-    for text, _ in TRAIN_DATA:
-        doc = nlp(text)
-#         print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
-#         print("Tokens", [(t.text, t.ent_type_, t.ent_iob) for t in doc])
 
     # save model to output directory
     if output_dir is not None:

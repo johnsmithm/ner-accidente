@@ -3,23 +3,16 @@ from spacy import displacy
 
 # preprocessing function
 
-def clean_data(dataframe_column):
+def clean_data(dataframe_col):
     print(f'Started cleaning: the dataframe column from all the special characters\n')
-    dataframe_column = dataframe_column.str.replace('\xa0',' ')
-    dataframe_column = dataframe_column.str.replace('\|\|-\|\|','')
+    dataframe_columns = dataframe_col.str.replace('\xa0',' ')
+    dataframe_column = dataframe_columns.str.replace('\|\|-\|\|','')
 
-    spec_chars = ["!",'"',"#","%","&","'","(",")",
-                  "*","+",",",".","/",";","<",
-                  "=",">","?","@","[","\\","]","^","_",
-                  "`","{","}","~","–"]
-    for char in spec_chars:
-        dataframe_column = dataframe_column.str.replace(char, ' ')
-
-    dataframe_column = dataframe_column.str.replace(r'^\s+|\s+$', '')
-    dataframe_column = dataframe_column.str.replace('    ',' ')
-    dataframe_column = dataframe_column.str.replace('  ',' ')
-    dataframe_column = dataframe_column.str.replace('  ',' ')
-    print(dataframe_column[13])
+    dataframe_colu = dataframe_column.str.replace(r'^\s+|\s+$', '')
+    dataframe_colum = dataframe_colu.str.replace('    ',' ')
+    dataframe_column = dataframe_colum.str.replace('  ',' ')
+    dataframe_columne = dataframe_column.str.replace('  ',' ')
+    print(dataframe_columne[13])
 
     dataframe_column_clean = dataframe_column
 
@@ -33,9 +26,9 @@ def clean_data(dataframe_column):
 
 # pass it a dataframe column and it will go over them to extract all the entities that it has and displays them
 def detect_entities_in_dataframe(dataframe_column, model_path):
+    nlp = spacy.load(model_path)
     for sentence in dataframe_column:
         ## print named entities in phrases
-        nlp = spacy.load(model_path)
         sentence_nlp = nlp(sentence)
         print([(word, word.ent_type_) for word in sentence_nlp if word.ent_type_])
         # # visualize named entities
@@ -43,6 +36,7 @@ def detect_entities_in_dataframe(dataframe_column, model_path):
 
 # pass it 2 lists of words and it will create a new list with all the words that appear in both lists and how many times
 def get_words_appearing_in_both(marked_words, unmarked_words):
+
     words_that_appear_in_both = []
     for word in unmarked_words:
         if word in marked_words:
@@ -82,7 +76,6 @@ def get_how_many_entities_and_non_entities_per_phrase(dataframe):
 
 def change_to_training_format(passed_data):
     last_len = 0
-    position = []
     entities = []
 
     for i in passed_data:
@@ -93,8 +86,7 @@ def change_to_training_format(passed_data):
             last_len += len(i_processed) + 1
 
             entities.append((start, finish, 'LOC_ACCIDENT'))
-            position.append(start)
-            position.append(finish)
+
         else:
             last_len += len(i_processed) + 1
     return entities
@@ -106,9 +98,7 @@ def split_and_save_to_new_column(df_column):
     for row in df_column:
         # all the enteties per row will be held in this dic 
         entities_positions_dict = {}
-
         split = row.split(" ")
-
         #Data cleaning some symbols
         cleaned_data_no_bars = row
         cleaned_data_no_bars = cleaned_data_no_bars.replace('||', " ")
@@ -136,5 +126,7 @@ def split_in_ent_and_non_ent(df_column):
             else:
                 all_unmarked_text.append(words)
     return all_marked_text, all_unmarked_text
+
+
 
 
