@@ -1,5 +1,6 @@
 # all the dataset transformation to the x and y for training
 import numpy as np
+import pandas as pd
 from random import choice
 import csv, json
 
@@ -183,12 +184,29 @@ def createSentence(samples):
   return text, ''.join(Y)
 
 
+def create_many_Sentences(number_of_sentences = 1, create_from_what = samples):
+    texts = []
+    marks = []
+    indexes = []
+    for index, i in enumerate(range(0,number_of_sentences)):
+        index = index + 379
+        x,y = createSentence(samples)
+        # print(x)
+        # print(y)
+        indexes.append(index)
+        texts.append(x)
+        marks.append(y)
+    data = {'id': indexes,
+           'text': texts,
+           'marks': marks}
+    df = pd.DataFrame(data)
+    return df
 
 
 
-
-def readDF(path):    
+def read_csv_to_df(path_to_csv):    
     #use read_csv
+    test = pd.read_csv(path_to_csv)
     df = 'readfile'
     return df
 
