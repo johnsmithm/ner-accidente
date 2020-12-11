@@ -1,8 +1,11 @@
 import spacy
 from pre_processing import preprocesare
-# from import dataset.preprocesare
-nlp = spacy.load('../src/models/')
 
+# Local
+# nlp = spacy.load('../src/models/')
+
+# Docker
+nlp = spacy.load('../models/')
 
 #Spacy stuff
 def predict_ent(text_to_extract_from):

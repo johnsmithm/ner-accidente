@@ -4,9 +4,8 @@ import pandas as pd
 from random import choice
 import csv, json
 
-voctext = '!~ abcdefghijklmnopqrstuvwxyz,.0123456789[]()' + ''.join([i.upper() for i in 'abcdefghijklmnopqrstuvwxyz'])
-vocI = [i for i in voctext]
-voc = {i:j for j,i in enumerate(voctext) }
+
+
 def preprocesare(p):
   #return p
   diacritice = [['ș','s'],['ş','s'],['î','i'],['ă','a'],['ț','t'],['â','a'],['ţ','t']]
@@ -16,19 +15,21 @@ def preprocesare(p):
       continue
     w = w.lower()
     for f,t in diacritice:
-      # f,t = e
-      # f = e[0]
-      # t = e[1]
       w=w.replace(f,t)
-    # for f,t in diacritice:
-    #   w=w.replace(f.upper(),t.upper())
     r.append(w)
   return ' '.join(r)
 
+def create_voc():
+voctext = '!~ abcdefghijklmnopqrstuvwxyz,.0123456789[]()' + ''.join([i.upper() for i in 'abcdefghijklmnopqrstuvwxyz'])
+vocI = [i for i in voctext]
+# voc = {i:j for j,i in enumerate(voctext) }
+
+
+
 preprocesare('strada Decebal.Ș'), voctext
 
-
-with open('../data/raw/generate_data/x.txt') as json_file:#has the text from news articles about accidents + id in the ArticleLinks
+#has the text from news articles about accidents + id in the ArticleLinks
+with open('../data/raw/generate_data/x.txt') as json_file:
     x = json.load(json_file)
 a = []
 hd = None
@@ -56,18 +57,15 @@ def getColumn(column, a):
       location[text] += 1
   return location
 
+##################################
 location = getColumn('location', a)
 len(location), sorted([[i,j] for i,j in location.items()], key=lambda x: x[1], reverse=True)[:10]
-
 locatitate = getColumn('localitate', a)
 len(locatitate), sorted([[i,j] for i,j in locatitate.items()], key=lambda x: x[1], reverse=True)[:10]
-
 location_trasee = getColumn('location_trasee', a)
 len(location_trasee), sorted([[i,j] for i,j in location_trasee.items()], key=lambda x: x[1], reverse=True)[:20]
-
 street = getColumn('street', a)
 len(street), sorted([[i,j] for i,j in street.items()], key=lambda x: x[1], reverse=True)[:10]
-
 obj = {#cuvinte sinonime
     'subiect1':['un taxi','un sofer','o soferita','o masina','un automobil','o motocicleta','un autobuz', 'o rutiera', 'o biclicleta','un autoturism'],
     'subiect2':['doua masini','doua automobile','doua motociclete','o masina si un autobuz','doua autoturisme'],
@@ -101,49 +99,50 @@ obj = {#cuvinte sinonime
     'ora':[str(i)+':'+str(j) for i in range(1,24) for j in ['00','20','30','40','50']],
     'data':[str(i)+' '+str(l) for i in range(1,31) for l in ['ianuarie','februarie','martie','aprilie','mai','decembrie']]
 }
-
 pre = ['accident grav in {oras}!']#propozitii inainte.
 #propozitii dupa
 more = ['potriv politiei persoana traumat a fost luat de o ambulanta si transport de urgent la','In urma impactului un taxi s-a rasturnat iar celalalt automobil',
         'Dupa produc accident sofer {marca}-ul a scos numererele']
-
 #templates exemple accidente
 samples = [
-           
-           'potrivit martorilor {sofer} de {ani} de ani {circula} {strada} iar {marca}-ul pe {strada1}.',
-           #potriv martorilor sofer de 25 de ani circul pe strad vlaicu parcalab iar bmw-ul pe mihail kogalniceanu dup produc accident sofer bmw-ul a scos numer
-           '{object1} {duse} la {spital} in urma unu accident {location}.',
-           #patru persoan au fost transport la spital de urgenta in urma unu accident pe soseau balcani intersect cu strad deleanu
-           '{ziua} {data} in jur ore {ora} {location} {sofer} unui {autoturism} de model {marca} {action1} {object1}.',
-           #sambata 28 octombrie in jur ore 19:00 pe strad vas alecsandr din or cahul sofer unu autoturist de model „ford” a tampon un barbat
-           '{subiect2} {action3} {cand} {location}.',
-           '{subiect2} {action3} in jurul orei {ora} {location}.',
-           '{subiect2} {action3} in jurul orei {ora} pe sosea {traseu}.',
-           '{ziua} {data} {subiect2} {action3} {cand} {location}.',
-           #dou masin s-au ciocnit asear la intersect bulevard daci si traian din capitala in urma impactului un tax s-a rasturnat iar celalalt automobil
-           '{accident} {action4} {cand} {location}.',
-           '{accident} {action4} {cand} la intersectia dintre {strada} si {strada1}.',
-           '{accident} {action4} la ora {ora} la intersectia dintre {strada} si {strada1}.',
-           #accident s-a intampl in aceast dimineata pe soseau munc din capitala
-           "{subiect1} {action1} {object1} {unde1} {location}.",
-           #un sofer a tamponat o femeie p trec de pietoni la intersect bd decebal cu strad trandafirilor potriv pol
-           "{object1} {action2} {cum} {cand} {subiect1} {accident} {action3} {location} in jur orei {ora}.",
-           #un pieton a fost spulber mortal asear de un taxi accident s-a produs pe soseau munc din capitala in jur ore 21:00
+        
+        'potrivit martorilor {sofer} de {ani} de ani {circula} {strada} iar {marca}-ul pe {strada1}.',
+        #potriv martorilor sofer de 25 de ani circul pe strad vlaicu parcalab iar bmw-ul pe mihail kogalniceanu dup produc accident sofer bmw-ul a scos numer
+        '{object1} {duse} la {spital} in urma unu accident {location}.',
+        #patru persoan au fost transport la spital de urgenta in urma unu accident pe soseau balcani intersect cu strad deleanu
+        '{ziua} {data} in jur ore {ora} {location} {sofer} unui {autoturism} de model {marca} {action1} {object1}.',
+        #sambata 28 octombrie in jur ore 19:00 pe strad vas alecsandr din or cahul sofer unu autoturist de model „ford” a tampon un barbat
+        '{subiect2} {action3} {cand} {location}.',
+        '{subiect2} {action3} in jurul orei {ora} {location}.',
+        '{subiect2} {action3} in jurul orei {ora} pe sosea {traseu}.',
+        '{ziua} {data} {subiect2} {action3} {cand} {location}.',
+        #dou masin s-au ciocnit asear la intersect bulevard daci si traian din capitala in urma impactului un tax s-a rasturnat iar celalalt automobil
+        '{accident} {action4} {cand} {location}.',
+        '{accident} {action4} {cand} la intersectia dintre {strada} si {strada1}.',
+        '{accident} {action4} la ora {ora} la intersectia dintre {strada} si {strada1}.',
+        #accident s-a intampl in aceast dimineata pe soseau munc din capitala
+        "{subiect1} {action1} {object1} {unde1} {location}.",
+        #un sofer a tamponat o femeie p trec de pietoni la intersect bd decebal cu strad trandafirilor potriv pol
+        "{object1} {action2} {cum} {cand} {subiect1} {accident} {action3} {location} in jur orei {ora}.",
+        #un pieton a fost spulber mortal asear de un taxi accident s-a produs pe soseau munc din capitala in jur ore 21:00
 ]
 #exemple negative, nu despre accidente
 false = [
-         'in zona s-au creat ambuteiaj kilometrice, coloana de masini blocheaza trafic de la {strada}',
-         #in zon s-au creat ambuteiaj kilometrice coloan de masin bloc trafic de la cal basarab pan in regiun circului
-         '{object1} {locuieste} {oras}',
-         '{object1} care a fost accidentat {locuieste} {oras}',
-         '{sofer} care a creat accidentul {locuieste} {oras}',
-         '{strada} chisinau md-{ani}8 republica moldova tel: (022) {ani}-{ani}-{ani} mob: {ani} {ani} {ani}',
-         '{sofer} {locuieste} {strada} {oras}',
-         '{murit} de {ani} de ani a fost internata in sectia reanimare din spital raional {oras} cu diferite traume',
-         # decedat iar pasagerul de 28 de ani a fost intern in sect reanim din spital raional telenesti cu difer traume
-         'in zona se circula cu dificulte pe {strada} direct spre {strada1} astfel serviciul ”infotrafic” recomanda conduc auto:',
-         #in zona se circul cu dificult pe strismail direct spre strcal basarabiei astfel servic ”infotrafic” recomand conduc auto:
+        'in zona s-au creat ambuteiaj kilometrice, coloana de masini blocheaza trafic de la {strada}',
+        #in zon s-au creat ambuteiaj kilometrice coloan de masin bloc trafic de la cal basarab pan in regiun circului
+        '{object1} {locuieste} {oras}',
+        '{object1} care a fost accidentat {locuieste} {oras}',
+        '{sofer} care a creat accidentul {locuieste} {oras}',
+        '{strada} chisinau md-{ani}8 republica moldova tel: (022) {ani}-{ani}-{ani} mob: {ani} {ani} {ani}',
+        '{sofer} {locuieste} {strada} {oras}',
+        '{murit} de {ani} de ani a fost internata in sectia reanimare din spital raional {oras} cu diferite traume',
+        # decedat iar pasagerul de 28 de ani a fost intern in sect reanim din spital raional telenesti cu difer traume
+        'in zona se circula cu dificulte pe {strada} direct spre {strada1} astfel serviciul ”infotrafic” recomanda conduc auto:',
+        #in zona se circul cu dificult pe strismail direct spre strcal basarabiei astfel servic ”infotrafic” recomand conduc auto:
 ]
+# return samples, false
+########################
+
 
 def rd():
   return np.random.rand()
@@ -203,11 +202,118 @@ def create_many_Sentences(number_of_sentences = 1, create_from_what = samples):
     return df
 
 
+### START PROCESSING OF THE GENERATED PHRASES
+def get_index_start_finish(x,y):
+    # print(x)
+    # print(y)
+    try:
+        START_KEYWORD_index = []
+        END_KEYWORD_index = []
+        for index,(f, b) in enumerate(zip(x,y)):
+            if y[index] == '-' and y[index+1] == '+':
+#                 print('START_INDEX',index)
+                START_KEYWORD_index.append(index)
+            elif y[index] == '+' and y[index+1] == '-':
+#                 print('END_INDEX',index+1)
+                END_KEYWORD_index.append(index+1)
+    except:
+        pass
+    return START_KEYWORD_index, END_KEYWORD_index
+
+
+def transform_keywords(start,end):
+    ENTITIES = []
+    for f, b in zip(start,end):
+        ent =[f,b]
+        # print(ent)
+        ENTITIES.append(ent)
+    # print('ENTITIES',ENTITIES)
+    return ENTITIES
+
+
+def check_if_exists_in_list_of_lists(elem_to_check, list_of_lists):
+    check_status = bool
+    if any(elem_to_check in sublist for sublist in list_of_lists):
+        check_status = True
+    else:
+        check_status = False
+    return check_status
+
+def get_space_in_enteties(ent_ranges, phrase):
+    spaces_in_ent = []
+    for ent in ent_ranges:
+        # print(phrase[ent[0]:ent[1]])
+        for i in range(ent[0],ent[1]):
+            if phrase[i] == ' ':
+                spaces_in_ent.append(i)
+        for i in spaces_in_ent:
+            CHECK = check_if_exists_in_list_of_lists(i,ent_ranges)
+            if CHECK:
+                spaces_in_ent.remove(i)
+#                 print('SPACE REPEATING IN START',i)
+#     print('SPACES',spaces_in_ent)
+    return spaces_in_ent
+
+
+def repalce_in_phrase(index_start_finish,index_spaces, phrase):
+#     print(index_start_finish)
+#     print(phrase)
+    
+    phrase_in_list = list(phrase)
+    for point in index_spaces:
+#         print('index_spaces', point)
+        phrase_in_list[point] = '|| ||'
+        
+    for index,point in enumerate(index_start_finish):
+        index = index+1
+#         print('index_start_finish',index,point)
+#         print(phrase[point])
+        if index%2 == 0:
+            phrase_in_list[point] = '|| '
+        if index%2 == 1:
+            phrase_in_list[point] = ' ||'
+
+    final_phrase = ''.join(phrase_in_list)
+#     print(final_phrase)
+    return final_phrase
+
+
+def yLetters2bars(text, yLetters):
+    """
+    input: 
+    - aa bb cb db eb
+    - ---++----++---
+    output: aa ||bb|| cb ||db|| eb
+    """
+    # print('TEXT_LEN:',len(text),'MARKS_LEN:',len(yLetters))
+    
+    start_index,end_index = get_index_start_finish(text,yLetters)
+    # print(start_index,end_index)
+    
+    index_to_replace_with_bars = transform_keywords(start_index,end_index)
+    # print(index_to_replace_with_bars)
+    
+    spaces_in_ent = get_space_in_enteties(index_to_replace_with_bars, text)
+    # print(spaces_in_ent)
+    
+    joined_index_to_replace_with_bars =  [y for x in index_to_replace_with_bars for y in x]
+    final_phrase = repalce_in_phrase(joined_index_to_replace_with_bars,spaces_in_ent, text)
+    # print(final_phrase)
+    return final_phrase
+
+### END PROCESSING OF THE GENERATED PHRASES
+
+
+
+
+
+
+
 
 def read_csv_to_df(path_to_csv):    
     #use read_csv
     test = pd.read_csv(path_to_csv)
-    df = 'readfile'
+    df = test
     return df
 
 
