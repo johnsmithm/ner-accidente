@@ -19,11 +19,8 @@ def preprocesare(p):
     r.append(w)
   return ' '.join(r)
 
-def create_voc():
 voctext = '!~ abcdefghijklmnopqrstuvwxyz,.0123456789[]()' + ''.join([i.upper() for i in 'abcdefghijklmnopqrstuvwxyz'])
 vocI = [i for i in voctext]
-# voc = {i:j for j,i in enumerate(voctext) }
-
 
 
 preprocesare('strada Decebal.Ș'), voctext
@@ -207,28 +204,28 @@ def get_index_start_finish(x,y):
     # print(x)
     # print(y)
     try:
-        START_KEYWORD_index = []
-        END_KEYWORD_index = []
+        start_keyword_index = []
+        end_keyword_index = []
         for index,(f, b) in enumerate(zip(x,y)):
             if y[index] == '-' and y[index+1] == '+':
 #                 print('START_INDEX',index)
-                START_KEYWORD_index.append(index)
+                start_keyword_index.append(index)
             elif y[index] == '+' and y[index+1] == '-':
 #                 print('END_INDEX',index+1)
-                END_KEYWORD_index.append(index+1)
+                end_keyword_index.append(index+1)
     except:
         pass
-    return START_KEYWORD_index, END_KEYWORD_index
+    return start_keyword_index, end_keyword_index
 
 
 def transform_keywords(start,end):
-    ENTITIES = []
+    enteties = []
     for f, b in zip(start,end):
         ent =[f,b]
         # print(ent)
-        ENTITIES.append(ent)
-    # print('ENTITIES',ENTITIES)
-    return ENTITIES
+        enteties.append(ent)
+    print('enteties',enteties)
+    return enteties
 
 
 def check_if_exists_in_list_of_lists(elem_to_check, list_of_lists):
@@ -242,7 +239,7 @@ def check_if_exists_in_list_of_lists(elem_to_check, list_of_lists):
 def get_space_in_enteties(ent_ranges, phrase):
     spaces_in_ent = []
     for ent in ent_ranges:
-        # print(phrase[ent[0]:ent[1]])
+        print(phrase[ent[0]:ent[1]])
         for i in range(ent[0],ent[1]):
             if phrase[i] == ' ':
                 spaces_in_ent.append(i)
@@ -250,8 +247,8 @@ def get_space_in_enteties(ent_ranges, phrase):
             CHECK = check_if_exists_in_list_of_lists(i,ent_ranges)
             if CHECK:
                 spaces_in_ent.remove(i)
-#                 print('SPACE REPEATING IN START',i)
-#     print('SPACES',spaces_in_ent)
+                print('SPACE REPEATING IN START',i)
+    print('SPACES',spaces_in_ent)
     return spaces_in_ent
 
 
@@ -289,25 +286,16 @@ def yLetters2bars(text, yLetters):
     
     start_index,end_index = get_index_start_finish(text,yLetters)
     # print(start_index,end_index)
-    
     index_to_replace_with_bars = transform_keywords(start_index,end_index)
     # print(index_to_replace_with_bars)
-    
     spaces_in_ent = get_space_in_enteties(index_to_replace_with_bars, text)
     # print(spaces_in_ent)
-    
     joined_index_to_replace_with_bars =  [y for x in index_to_replace_with_bars for y in x]
     final_phrase = repalce_in_phrase(joined_index_to_replace_with_bars,spaces_in_ent, text)
     # print(final_phrase)
     return final_phrase
 
 ### END PROCESSING OF THE GENERATED PHRASES
-
-
-
-
-
-
 
 
 def read_csv_to_df(path_to_csv):    
