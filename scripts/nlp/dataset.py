@@ -207,11 +207,13 @@ def get_index_start_finish(x,y):
         start_keyword_index = []
         end_keyword_index = []
         for index,(f, b) in enumerate(zip(x,y)):
+            index = index + 1
+            # print(index,(f, b))
             if y[index] == '-' and y[index+1] == '+':
-#                 print('START_INDEX',index)
-                start_keyword_index.append(index)
+                # print('START_INDEX',index+1)
+                start_keyword_index.append(index+1)
             elif y[index] == '+' and y[index+1] == '-':
-#                 print('END_INDEX',index+1)
+                # print('END_INDEX',index+1)
                 end_keyword_index.append(index+1)
     except:
         pass
@@ -224,7 +226,7 @@ def transform_keywords(start,end):
         ent =[f,b]
         # print(ent)
         enteties.append(ent)
-    print('enteties',enteties)
+    # print('enteties',enteties)
     return enteties
 
 
@@ -239,16 +241,16 @@ def check_if_exists_in_list_of_lists(elem_to_check, list_of_lists):
 def get_space_in_enteties(ent_ranges, phrase):
     spaces_in_ent = []
     for ent in ent_ranges:
-        print(phrase[ent[0]:ent[1]])
+        # print(phrase[ent[0]:ent[1]])
         for i in range(ent[0],ent[1]):
             if phrase[i] == ' ':
                 spaces_in_ent.append(i)
         for i in spaces_in_ent:
-            CHECK = check_if_exists_in_list_of_lists(i,ent_ranges)
-            if CHECK:
+            check = check_if_exists_in_list_of_lists(i,ent_ranges)
+            if check:
                 spaces_in_ent.remove(i)
-                print('SPACE REPEATING IN START',i)
-    print('SPACES',spaces_in_ent)
+                # print('SPACE REPEATING IN START',i)
+    # print('SPACES',spaces_in_ent)
     return spaces_in_ent
 
 
@@ -268,7 +270,7 @@ def repalce_in_phrase(index_start_finish,index_spaces, phrase):
         if index%2 == 0:
             phrase_in_list[point] = '|| '
         if index%2 == 1:
-            phrase_in_list[point] = ' ||'
+            phrase_in_list[point-1] = ' ||'
 
     final_phrase = ''.join(phrase_in_list)
 #     print(final_phrase)
@@ -296,6 +298,73 @@ def yLetters2bars(text, yLetters):
     return final_phrase
 
 ### END PROCESSING OF THE GENERATED PHRASES
+
+def devide_enteties(ent_index,spaces_in_ent):
+    print('ent_index',ent_index)
+    ent_possitions = []
+    all_ent_pos = []
+    end_of_ent = []
+    for ent_pos in ent_index:
+#         print('ent',ent_pos)
+        all_ent_pos.extend([ent_pos[0],ent_pos[1]])
+        spaces_per_ent = []
+        for space in spaces_in_ent:
+            if space in range(ent_pos[0],ent_pos[1]):
+                spaces_per_ent.append(space)
+#         print('spaces_per_ent',spaces_per_ent)
+        for space in spaces_per_ent:
+#             end_of_ent.append(space-1)
+            end_of_ent.append(space+1)
+            
+#     print('end_of_ent',end_of_ent)
+    ent_possitions = end_of_ent+all_ent_pos+spaces_in_ent
+#     print('ent_possitions',ent_possitions)
+    ent_possitions.sort()
+#     print('ent_possitions',ent_possitions)
+    return ent_possitions
+
+from itertools import zip_longest
+def grouper(iterable, n, fillvalue=None):
+#     "Collect data into fixed-length chunks or blocks"
+    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
+    args = [iter(iterable)] * n
+    return zip_longest(*args, fillvalue=fillvalue)
+
+
+def spacy_transform(all_poss,text):
+    print(text[all_poss[0]:all_poss[-1]])
+    print('spacy_transform',all_poss)
+    spacy_format_ents = []
+    for x, y in grouper(all_poss, 2, 0.0):
+#         print(x, y)
+#         print(text[x:y])
+        formated_ent = (x,y,'POS')
+        spacy_format_ents.append(formated_ent)
+    print(spacy_format_ents)
+    return spacy_format_ents
+
+def yLetters2spacy(text, yLetters):
+    """
+    input: 
+    - aa bb cb db eb
+    - ---++----++---
+    output: [(3,5,'POS'), (8,9,'POS')]
+    """
+#     print(text)
+#     print(yLetters)
+    start_index,end_index = get_index_start_finish(text,yLetters)
+#     print('start_index,end_index',start_index,end_index)
+    index_to_replace_with_bars = transform_keywords(start_index,end_index)
+#     print('index_to_replace_with_bars',index_to_replace_with_bars)
+    spaces_in_ent = get_space_in_enteties(index_to_replace_with_bars, text)
+#     print('spaces_in_ent',spaces_in_ent)
+    all_ent_poss = devide_enteties(index_to_replace_with_bars,spaces_in_ent)
+#     print('all_ent_poss',all_ent_poss)
+    all_formater_ents = spacy_transform(all_ent_poss,text)
+    return all_formater_ents
+
+
+
 
 
 def read_csv_to_df(path_to_csv):    
