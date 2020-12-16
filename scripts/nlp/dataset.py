@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from random import choice
 import csv, json
-
+from itertools import zip_longest
 
 
 def preprocesare(p):
@@ -180,23 +180,54 @@ def createSentence(samples):
   return text, ''.join(Y)
 
 
-def create_many_Sentences(number_of_sentences = 1, create_from_what = samples):
+def create_many_Sentences(number_of_sentences = 1, last_index=0, create_from_what = samples):
     texts = []
     marks = []
     indexes = []
     for index, i in enumerate(range(0,number_of_sentences)):
-        index = index + 379
+        index = index + last_index
         x,y = createSentence(samples)
         # print(x)
         # print(y)
         indexes.append(index)
         texts.append(x)
         marks.append(y)
+
     data = {'id': indexes,
-           'text': texts,
-           'marks': marks}
-    df = pd.DataFrame(data)
+           'y': 1,
+           'text_unprocessed': texts,
+           'marks': marks,
+           'com': None}
+    return data
+
+def get_id_of_last_elem_in_dataset(path):
+  with open(path, 'r') as real_data:
+      data = real_data.readlines()
+      last_row = data[-1].split('\t') # Update for tab delimit.
+      last_row = ''.join(last_row).split(',')
+      # print(last_row)
+      cell_with_last_id = last_row[0]
+      cell_with_last_id = int(cell_with_last_id)
+      # print(cell_with_last_id)
+      return cell_with_last_id
+
+def turn_data_to_df(data_to_create_from):
+    df = pd.DataFrame(data_to_create_from)
+    df = df.astype({"y": int})
     return df
+
+def save_df_to_csv(df,path_where_to_save):
+    df.to_csv(index=False)
+
+def join_2_df_into_1_drop_uneeded(df1,df2):
+    #df1 is assumed to be the column that holds the real values
+    #df2 is the one that holds the generated data
+    if 'text_unprocessed' in df2.columns:
+        df2 = df2.drop(columns=['text_unprocessed','marks'])
+        frames = [df1, df2]
+        df3 = pd.concat(frames, ignore_index=True, sort=True)
+        df3.reset_index(drop=True)
+    return df3
 
 
 ### START PROCESSING OF THE GENERATED PHRASES
@@ -323,7 +354,7 @@ def devide_enteties(ent_index,spaces_in_ent):
 #     print('ent_possitions',ent_possitions)
     return ent_possitions
 
-from itertools import zip_longest
+
 def grouper(iterable, n, fillvalue=None):
 #     "Collect data into fixed-length chunks or blocks"
     # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"

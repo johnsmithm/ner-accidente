@@ -14,6 +14,8 @@ import random
 import warnings
 from pathlib import Path
 import spacy
+import pandas as pd
+import numpy as np
 from spacy.util import minibatch, compounding
 
 # Use built-in "ner" pipeline components
@@ -62,3 +64,40 @@ def main(model=None,TRAIN_DATA=None , output_dir=None, n_iter=100):
             output_dir.mkdir()
         nlp.to_disk(output_dir)
         print("Saved model to", output_dir)
+
+if __name__ == "__main__":
+
+
+
+    import os
+    import sys
+
+
+    path = os.path.join('data', 'processed', 'ner - locatia accidente_clean.plk')
+    sys.path.insert(0, "src")
+    sys.path.insert(0, "scripts")
+    # df = pd.read_csv(path)    
+    df = pd.read_pickle(path)
+    ## Deviding the Training-Set from the testing set
+    # join half of the real phrases with half of the generated ones for both training and testing
+    records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:80, 155:900]].to_records(index=False)
+
+    records_test_real = df[['text_no_sw_no_bars','Entities_position']][80:155].to_records(index=False)
+    testing_data_real = list(records_test_real)
+
+    from nlp.evaluate import evaluate
+
+    records_test_generated = df[['text_no_sw_no_bars','Entities_position']][900:1450].to_records(index=False)
+    testing_data_generated = list(records_test_generated)
+    main(model='src/models',TRAIN_DATA=records_train, output_dir='src/models/', n_iter=1)
+
+    
+
+    results = evaluate(nlp, testing_data_real)
+    results_real = (f"-------------------------\nFor real_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
+
+    results = evaluate(nlp, testing_data_generated)
+    results_generated = (f"-------------------------\nFor generated_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
+
+    with open("metrics.txt", 'w') as outfile:
+        outfile.write("Accuracy: " + str(results_real) + "\n" + "Accuracy: " + str(results_generated) + "\n")

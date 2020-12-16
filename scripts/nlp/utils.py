@@ -6,19 +6,19 @@ def bars2spacy(text_bars):
     output: [(2,3,'LOC_ACCIDENT'), (4,5,'LOC_ACCIDENT')]
     """
     split_phrase = text_bars.split()
-    START_LEN = 0
-    ENTITIES_PER_PHRASE = []
+    start_len = 0
+    enteties_per_phrase = []
     for word in split_phrase:
         x = word.startswith("||")
         if x: # IF X IS TRUE
-            START_ENT_POS = START_LEN
-            FINISH_ENT_POS = START_LEN + (len(word)-4) # -4 so that we take into account the bars
-            ENTITIES_PER_PHRASE.append((START_ENT_POS,FINISH_ENT_POS,'LOC_ACCIDENT'))
-            START_LEN += (len(word)-3) # -3 because of the space before the word
+            START_ENT_POS = start_len
+            FINISH_ENT_POS = start_len + (len(word)-4) # -4 so that we take into account the bars
+            enteties_per_phrase.append((START_ENT_POS,FINISH_ENT_POS,'LOC_ACCIDENT'))
+            start_len += (len(word)-3) # -3 because of the space before the word
         else:
-            START_LEN += (len(word)+1)
+            start_len += (len(word)+1)
 
-    return ENTITIES_PER_PHRASE
+    return enteties_per_phrase
 
 def bars2y(text_bars):
     """

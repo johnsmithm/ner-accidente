@@ -52,7 +52,9 @@ def check_accuracy(test_list, model, test_set_name='PLACEHOLDER'):
     print(50*'-')
     return dict_phrase_issue, dict_issue_location, dict_issue_not_found
 
-""" Extract the possition 2,3 and 4,5 from the  [(2,3,'POS'), (4,5,'POS')]"""
+""" 
+Extract the possition 2,3 and 4,5 from the  [(2,3,'POS'), (4,5,'POS')]
+"""
 def extract_pos(column):
     single_positions = []
     if len(column) == 1:
@@ -67,7 +69,9 @@ def extract_pos(column):
         column = multiple_positions
     return column
 
-""" Extract the words based on their position within the string """
+""" 
+Extract the words based on their position within the string 
+"""
 def extract_word(position):    
     whole_phrase = position[0]
     word_position = position[1]
