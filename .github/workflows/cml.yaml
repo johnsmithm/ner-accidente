@@ -17,7 +17,7 @@ jobs:
           pip3 install -r requirements.txt
           python -m spacy download ro_core_news_lg
 
-          python train/train.py
+          python train.py
           
           cat metrics.txt >> report.md
           cml-publish confusion_matrix.png --md --title 'confusion-matrix' >> report.md
