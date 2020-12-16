@@ -71,13 +71,20 @@ if __name__ == "__main__":
 
     import os
     import sys
+    import pickle5 as pickle
 
 
+"""
+https://stackoverflow.com/questions/63329657/python-3-7-error-unsupported-pickle-protocol-5
+"""
     path = os.path.join('data', 'processed', 'ner-locatia_accidente_clean.plk')
+    with open(path, "rb") as fh:
+        data = pickle.load(fh)
+    
     sys.path.insert(0, "src")
     sys.path.insert(0, "scripts")
     # df = pd.read_csv(path)    
-    df = pd.read_pickle(path)
+    df = pd.read_pickle(data)
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
     records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:80, 155:900]].to_records(index=False)
