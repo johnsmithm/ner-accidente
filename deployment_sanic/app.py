@@ -28,10 +28,5 @@ async def extract(request):
     result = 'Found these enteties: {}'.format(prediction)
     return response.json(result)
 
-@app.route("/evaluate-model/<name>")
-async def eval_model(request):
-    return response.json({"TODO:": ""})
-
-
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000, debug=True)

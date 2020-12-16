@@ -73,7 +73,7 @@ if __name__ == "__main__":
     import sys
 
 
-    path = os.path.join('data', 'processed', 'ner - locatia accidente_clean.plk')
+    path = os.path.join('data', 'processed', 'ner-locatia_accidente_clean.plk')
     sys.path.insert(0, "src")
     sys.path.insert(0, "scripts")
     # df = pd.read_csv(path)    
@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     records_test_generated = df[['text_no_sw_no_bars','Entities_position']][900:1450].to_records(index=False)
     testing_data_generated = list(records_test_generated)
-    main(model='src/models',TRAIN_DATA=records_train, output_dir='src/models/', n_iter=1)
+    main(model='src/models',TRAIN_DATA=records_train, output_dir='src/models/', n_iter=10)
 
     
 
