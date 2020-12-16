@@ -71,38 +71,32 @@ if __name__ == "__main__":
 
     import os
     import sys
-    import pickle5 as pickle
 
-
-"""
-https://stackoverflow.com/questions/63329657/python-3-7-error-unsupported-pickle-protocol-5
-"""
     path = os.path.join('data', 'processed', 'ner-locatia_accidente_clean.plk')
-    with open(path, "rb") as fh:
-        data = pickle.load(fh)
-    
+ 
     sys.path.insert(0, "src")
     sys.path.insert(0, "scripts")
     # df = pd.read_csv(path)    
-    df = pd.read_pickle(data)
+    df = pd.read_pickle(path)
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
     records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:80, 155:900]].to_records(index=False)
-
     records_test_real = df[['text_no_sw_no_bars','Entities_position']][80:155].to_records(index=False)
     testing_data_real = list(records_test_real)
 
+    #Evaluating the model
+    ###########################
     from nlp.evaluate import evaluate
-
     records_test_generated = df[['text_no_sw_no_bars','Entities_position']][900:1450].to_records(index=False)
     testing_data_generated = list(records_test_generated)
-    main(model='src/models',TRAIN_DATA=records_train, output_dir='src/models/', n_iter=10)
+    main(model='ro_core_news_lg', TRAIN_DATA=records_train, output_dir='src/models/', n_iter=1)
 
-    
+############
 
+    nlp = spacy.load('src/models')
+    ##########################################
     results = evaluate(nlp, testing_data_real)
     results_real = (f"-------------------------\nFor real_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
-
     results = evaluate(nlp, testing_data_generated)
     results_generated = (f"-------------------------\nFor generated_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
 
