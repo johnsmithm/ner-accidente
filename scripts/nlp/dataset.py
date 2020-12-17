@@ -331,7 +331,7 @@ def yLetters2bars(text, yLetters):
 ### END PROCESSING OF THE GENERATED PHRASES
 
 def devide_enteties(ent_index,spaces_in_ent):
-    print('ent_index',ent_index)
+    # print('ent_index',ent_index)
     ent_possitions = []
     all_ent_pos = []
     end_of_ent = []
@@ -355,23 +355,19 @@ def devide_enteties(ent_index,spaces_in_ent):
     return ent_possitions
 
 
-def grouper(iterable, n, fillvalue=None):
-#     "Collect data into fixed-length chunks or blocks"
-    # grouper('ABCDEFG', 3, 'x') --> ABC DEF Gxx"
-    args = [iter(iterable)] * n
-    return zip_longest(*args, fillvalue=fillvalue)
-
+def pair_list(list_):
+    return[list_[i:i+2] for i in range(0, len(list_), 2)]
 
 def spacy_transform(all_poss,text):
-    print(text[all_poss[0]:all_poss[-1]])
-    print('spacy_transform',all_poss)
+    # print(text[all_poss[0]:all_poss[-1]])
     spacy_format_ents = []
-    for x, y in grouper(all_poss, 2, 0.0):
-#         print(x, y)
-#         print(text[x:y])
-        formated_ent = (x,y,'POS')
+    pairs = pair_list(all_poss)
+    for one_pair in pairs:
+        # print(text[one_pair[0]:one_pair[1]])
+        formated_ent = (one_pair[0],one_pair[1],'POS')
+        # print(formated_ent)
         spacy_format_ents.append(formated_ent)
-    print(spacy_format_ents)
+    # print(spacy_format_ents)
     return spacy_format_ents
 
 def yLetters2spacy(text, yLetters):
@@ -393,9 +389,6 @@ def yLetters2spacy(text, yLetters):
 #     print('all_ent_poss',all_ent_poss)
     all_formater_ents = spacy_transform(all_ent_poss,text)
     return all_formater_ents
-
-
-
 
 
 def read_csv_to_df(path_to_csv):    

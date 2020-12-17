@@ -77,7 +77,7 @@ def get_how_many_entities_and_non_entities_per_phrase(dataframe):
 def change_to_training_format(passed_data):
     last_len = 0
     entities = []
-
+    passed_data = passed_data.split(" ")
     for i in passed_data:
         i_processed = i.replace("||","")
         if "|" in i:
@@ -98,14 +98,13 @@ def split_and_save_to_new_column(df_column):
     for row in df_column:
         # all the enteties per row will be held in this dic 
         entities_positions_dict = {}
-        split = row.split(" ")
         #Data cleaning some symbols
         cleaned_data_no_bars = row
         cleaned_data_no_bars = cleaned_data_no_bars.replace('||', " ")
         cleaned_data_no_bars = cleaned_data_no_bars.replace('   ', " ")
         cleaned_data_no_bars = cleaned_data_no_bars.replace('  ', " ")
 
-        entities_position = change_to_training_format(split)
+        entities_position = change_to_training_format(row)
         # Append
         entities_positions_dict['entities'] = entities_position
         holding_dict[row_index] = entities_positions_dict

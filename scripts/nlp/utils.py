@@ -1,4 +1,5 @@
-
+import sys
+sys.path.append(".")
 
 def bars2spacy(text_bars):
     """
@@ -83,38 +84,72 @@ def yLetters2spacy(text, yLetters):
 def y2bars(y, text):
     """
     input: 
-    - [0,1,0,1,0]
-    - a b c d e
+    - [0,1,0,1,0] -> BARS2Y
+    - a b c d e -> text
     output: a ||b|| c ||d|| e
     """
-    pass
+    text = text.split()
+    for index,word in enumerate(zip(y,text)):
+        if word[0] == 1:
+            text[index] = '||'+ text[index] + '||'
+    text = ' '.join(text)
+    return text
 
 def spacy2bars(entities, text):
     """
     input: 
     - [(2,3,'POS'), (4,5,'POS')]
     - a b c d e
-    output: a ||b|| c ||d|| e
+    
+    output: aa ||bb|| cc ||dd|| ee
     """
-    pass
+    all_ent = []
+    for ent in entities:
+        ent_pos = []
+        ent_pos.extend([ent[0],ent[1]])
+        all_ent.append(ent_pos)
+    for index,ent in enumerate(all_ent):
+        start_word = all_ent[index][0]
+        end_word = all_ent[index][1]
+        # Add additional numbers to the index so that
+        add_to_index = index*4
+        # it takes into account the added || to phrase
+        old = text[start_word+add_to_index:end_word+add_to_index]
+        new = '||' + text[start_word+add_to_index:end_word+add_to_index] + '||'
+        text = text.replace(old, new)
+        
+    return text
 
 def spacy2y(entities, text):
     """
     input: 
-    - [(2,3,'POS'), (4,5,'POS')]
-    - a b c d e
+    - [(3,5,'POS'), (9,11,'POS')]
+    - aa bb cc dd ee
     output: [0,1,0,1,0]
     """
-    pass
+#     print(entities, text)
+    marked_text = spacy2bars(entities, text)
+#     print(marked_text)
+    ent_or_nonent = bars2y(marked_text)
+#     print(ent_or_nonent)
+    return ent_or_nonent
 
-def y2spacy(text, y):
+from nlp.pptext import change_to_training_format 
+
+def y2spacy(y, text):
     """
     input: 
     - [0,1,0,1,0]
-    - a b c d e
-    output: [(2,3,'POS'), (4,5,'POS')]
+    - aa bb cc dd ee
+    output: [(3,5,'POS'), (9,11,'POS')]
     """
-    pass
+    marked_text = y2bars(y, text)
+    # print(marked_text)
+#     split = marked_text.split(" ")
+    spacy_format_ent = change_to_training_format(marked_text)
+    # print(text[result[0][0]:result[0][1]])
+    print(spacy_format_ent)
+    return spacy_format_ent
 
 def calculate_recall(y_pred, y_true):
     """
