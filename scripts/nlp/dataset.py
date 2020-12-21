@@ -4,7 +4,9 @@ import pandas as pd
 from random import choice
 import csv, json
 from itertools import zip_longest
-
+import sys
+import os
+sys.path.append(".")
 
 def preprocesare(p):
   #return p
@@ -25,12 +27,15 @@ vocI = [i for i in voctext]
 
 preprocesare('strada Decebal.Ș'), voctext
 
+
+sys.path.insert(0, "../data")
+print(os.listdir('.'))
 #has the text from news articles about accidents + id in the ArticleLinks
-with open('../data/raw/generate_data/x.txt') as json_file:
+with open('data/raw/generate_data/x.txt') as json_file:
     x = json.load(json_file)
 a = []
 hd = None
-with open('../data/raw/generate_data/ArticleLinks.csv') as csvfile:#has the location/street info + link to the news articles
+with open('data/raw/generate_data/ArticleLinks.csv') as csvfile:#has the location/street info + link to the news articles
     readCSV = csv.reader(csvfile, delimiter=',')
     for row in readCSV:
         if hd is None:

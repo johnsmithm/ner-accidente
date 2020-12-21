@@ -148,7 +148,7 @@ def y2spacy(y, text):
 #     split = marked_text.split(" ")
     spacy_format_ent = change_to_training_format(marked_text)
     # print(text[result[0][0]:result[0][1]])
-    print(spacy_format_ent)
+    # print(spacy_format_ent)
     return spacy_format_ent
 
 def calculate_recall(y_pred, y_true):
