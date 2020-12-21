@@ -1,8 +1,7 @@
 stages:
   get_data:
     cmd: wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1TKxABVonvgiE2oBgTKB6oOxXkynqjFth' -O data/raw/raw_data.csv 
-    outs:
-    - data/raw/raw_data.csv
+
   process_data:
     cmd: python3 prepare.py
     deps:
