@@ -8,3 +8,5 @@ pytest-cookies
 pytest-cov
 sphinx
 spacy
+dvc
+pydrive2

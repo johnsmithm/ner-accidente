@@ -1,0 +1,26 @@
+process_data:
+  cmd: python3 prepare.py
+  deps:
+  - path: data/raw/raw_data.csv
+    md5: 103145512816f29eaa4ee99a5f63c88e
+    size: 28803
+  - path: prepare.py
+    md5: f0a17b17e7b1474945ed58e7e03311f5
+    size: 2419
+  outs:
+  - path: data/processed/data_processed.plk
+    md5: aa63be7c002e8aa99b6cb7d8fedd4089
+    size: 169664
+train_model:
+  cmd: python3 train.py
+  deps:
+  - path: data/processed/data_processed.plk
+    md5: aa63be7c002e8aa99b6cb7d8fedd4089
+    size: 169664
+  - path: train.py
+    md5: 9c8cb665ca47855c7e0fd5d7ab6f68ef
+    size: 4604
+  outs:
+  - path: metrics.txt
+    md5: 7950cff7e281017620fa2245bde51787
+    size: 293
