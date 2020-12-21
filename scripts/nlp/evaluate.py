@@ -35,7 +35,8 @@ def check_accuracy(test_list, model, test_set_name='PLACEHOLDER'):
             tuple_ent =(ent.start_char, ent.end_char, ent.label_)
             ent_model_results.append(tuple_ent)
         if entities_localtion == ent_model_results:
-
+            # print('entities_localtion',entities_localtion)
+            # print('ent_model_results',ent_model_results)
             correct += 1
         else:
             # False positive
