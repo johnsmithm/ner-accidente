@@ -5,13 +5,14 @@ from spacy import displacy
 
 def clean_data(dataframe_col):
     print(f'Started cleaning: the dataframe column from all the special characters\n')
-    dataframe_columns = dataframe_col.str.replace('\xa0',' ')
+    dataframe_columns = dataframe_col.str.split().str.join(' ')
     dataframe_column = dataframe_columns.str.replace('\|\|-\|\|','')
 
     dataframe_colu = dataframe_column.str.replace(r'^\s+|\s+$', '')
     dataframe_colum = dataframe_colu.str.replace('    ',' ')
     dataframe_column = dataframe_colum.str.replace('  ',' ')
     dataframe_columne = dataframe_column.str.replace('  ',' ')
+    
     print(dataframe_columne[13])
 
     dataframe_column_clean = dataframe_column

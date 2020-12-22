@@ -10,3 +10,5 @@ sphinx
 spacy
 dvc
 pydrive2
+gdown
+pyyaml 

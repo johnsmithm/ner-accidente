@@ -1,19 +1,30 @@
 stages:
-  get_data:
-    cmd: wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1TKxABVonvgiE2oBgTKB6oOxXkynqjFth' -O data/raw/raw_data.csv 
-
-  process_data:
-    cmd: python3 prepare.py
+  get_dataset:
+    cmd: python3 pipeline_steps/get_dataset.py
     deps:
-    - prepare.py
+    - pipeline_steps/get_dataset.py
+    outs:
     - data/raw/raw_data.csv
+  prepare:
+    cmd: python3 pipeline_steps/prepare.py
+    deps:
+    - data/raw/raw_data.csv
+    - pipeline_steps/prepare.py
+    params:
+    - prepare.how_many_generated
     outs:
     - data/processed/data_processed.plk
-  train_model:
-    cmd: python3 train.py
+  train:
+    cmd: python3 pipeline_steps/train.py
     deps:
-    - train.py
     - data/processed/data_processed.plk
+    - pipeline_steps/train.py
+    params:
+    - train.for_test_procentage
+    - train.for_train_procentage
+    outs:
+    - src/models
+
     metrics:
-    - metrics.txt:
+    - metrics.json:
         cache: false

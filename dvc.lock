@@ -1,26 +1,50 @@
-process_data:
-  cmd: python3 prepare.py
+get_dataset:
+  cmd: python3 pipeline_steps/get_dataset.py
+  deps:
+  - path: pipeline_steps/get_dataset.py
+    md5: 7a8947038a22fd3737f34ca3be29b786
+    size: 160
+  outs:
+  - path: data/raw/raw_data.csv
+    md5: 103145512816f29eaa4ee99a5f63c88e
+    size: 28803
+prepare:
+  cmd: python3 pipeline_steps/prepare.py
   deps:
   - path: data/raw/raw_data.csv
     md5: 103145512816f29eaa4ee99a5f63c88e
     size: 28803
-  - path: prepare.py
-    md5: f0a17b17e7b1474945ed58e7e03311f5
-    size: 2419
+  - path: pipeline_steps/prepare.py
+    md5: dd6e38dca7b718dd54a7a8b9993a503a
+    size: 2582
+  params:
+    params.yaml:
+      prepare.how_many_generated:
+      - 100
   outs:
   - path: data/processed/data_processed.plk
-    md5: aa63be7c002e8aa99b6cb7d8fedd4089
-    size: 169664
-train_model:
-  cmd: python3 train.py
+    md5: 5b1f1559b3d58b986a437b38126a196b
+    size: 85485
+train:
+  cmd: python3 pipeline_steps/train.py
   deps:
   - path: data/processed/data_processed.plk
-    md5: aa63be7c002e8aa99b6cb7d8fedd4089
-    size: 169664
-  - path: train.py
-    md5: 9c8cb665ca47855c7e0fd5d7ab6f68ef
-    size: 4604
+    md5: 5b1f1559b3d58b986a437b38126a196b
+    size: 85485
+  - path: pipeline_steps/train.py
+    md5: 3f3220f6becf3a2f3f0819ed93285ee7
+    size: 4900
+  params:
+    params.yaml:
+      train.for_test_procentage:
+      - 40
+      train.for_train_procentage:
+      - 60
   outs:
-  - path: metrics.txt
-    md5: 7950cff7e281017620fa2245bde51787
-    size: 293
+  - path: metrics.json
+    md5: d34ed2b7c4b88ee066651a29717b95bb
+    size: 103
+  - path: src/models
+    md5: 46448334fd7ddd041019505355357bfa.dir
+    size: 635099262
+    nfiles: 16

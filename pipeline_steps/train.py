@@ -18,6 +18,15 @@ import pandas as pd
 import numpy as np
 from spacy.util import minibatch, compounding
 
+# read params
+import yaml
+params = yaml.safe_load(open('params.yaml'))['train']
+
+how_many_for_train = params['for_train_procentage'][0]
+how_many_for_test = params['for_test_procentage'][0]
+how_many_training_itterations = params['number_of_itterations'][0]
+
+
 # Use built-in "ner" pipeline components
 nlp = spacy.load("ro_core_news_lg")
 ner = nlp.get_pipe("ner")
@@ -71,34 +80,66 @@ if __name__ == "__main__":
 
     import os
     import sys
-
-    path = os.path.join('data', 'processed', 'data_processed.plk')
- 
     sys.path.insert(0, "src")
     sys.path.insert(0, "scripts")
-    # df = pd.read_csv(path)    
+
+    path = os.path.join('data', 'processed', 'data_processed.plk')
     df = pd.read_pickle(path)
+
+    df['text_no_sw_no_bars'] = df['text_no_sw'].str.replace('|','')
+    
+    from nlp.pptext import split_and_save_to_new_column
+    holding_dict = split_and_save_to_new_column(df['text_no_sw'])
+
+
+    ## Insert our data in spacy training format into the df column 'Training_format'
+    if 'Entities_position' in df.columns:
+        df = df.drop(columns='Entities_position')
+
+    # Assign to the previously created column the dictionaries with the values
+    df['Entities_position'] = pd.Series(holding_dict)
+ 
+
+    print('THIS MANY ROWS IN DF', int(len(df)))
+    rows_for_training = (int(len(df))*(how_many_for_train/100))
+    rows_for_training = int(rows_for_training)
+    rows_for_testing = (int(len(df))*(how_many_for_test/100))
+    rows_for_testing = int(rows_for_testing)
+    print((rows_for_training),rows_for_testing)
+    
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
-    records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:80, 155:900]].to_records(index=False)
-    records_test_real = df[['text_no_sw_no_bars','Entities_position']][80:155].to_records(index=False)
-    testing_data_real = list(records_test_real)
+    from sklearn.utils import shuffle
+    df = shuffle(df)
+    df.reset_index(inplace=True, drop=True)
+    print(df)
+    records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:rows_for_training]].to_records(index=False)
+    train_data = list(records_train)
+    
+    records_test_real = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[rows_for_testing:rows_for_training]].to_records(index=False)
+    testing_data = list(records_test_real)
 
-    #Evaluating the model
-    ###########################
-    from nlp.evaluate import evaluate
-    records_test_generated = df[['text_no_sw_no_bars','Entities_position']][900:1450].to_records(index=False)
-    testing_data_generated = list(records_test_generated)
-    main(model='ro_core_news_lg', TRAIN_DATA=records_train, output_dir='src/models/', n_iter=1)
+    
+    # MAIN TRAINING FUNCTION
+    main(model='ro_core_news_lg', TRAIN_DATA=train_data, output_dir='src/models/', n_iter=how_many_training_itterations)
 
 ############
 
+    # Evaluating the model
+    ###########################
+    import json
+    from nlp.evaluate import evaluate
+    
     nlp = spacy.load('src/models')
     ##########################################
-    results = evaluate(nlp, testing_data_real)
-    results_real = (f"-------------------------\nFor real_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
-    results = evaluate(nlp, testing_data_generated)
-    results_generated = (f"-------------------------\nFor generated_examples\nprecision is: {results['ents_p']}\nrecall is: {results['ents_r']}\nfscore is: {results['ents_f']}")
+    results = evaluate(nlp, testing_data)
 
-    with open("metrics.txt", 'w') as outfile:
-        outfile.write("Accuracy: " + str(results_real) + "\n" + "Accuracy: " + str(results_generated) + "\n")
+    data = {
+        "Metrics": {
+            "Precision": results['ents_p'],
+            "Recall": results['ents_r'],
+            "FScore": results['ents_f']
+        }
+    }
+    with open("metrics.json", 'w') as outfile:
+        json.dump(data,outfile)
