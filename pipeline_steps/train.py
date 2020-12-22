@@ -100,19 +100,16 @@ if __name__ == "__main__":
     df['Entities_position'] = pd.Series(holding_dict)
  
 
-    print('THIS MANY ROWS IN DF', int(len(df)))
     rows_for_training = (int(len(df))*(how_many_for_train/100))
     rows_for_training = int(rows_for_training)
     rows_for_testing = (int(len(df))*(how_many_for_test/100))
     rows_for_testing = int(rows_for_testing)
-    print((rows_for_training),rows_for_testing)
     
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
     from sklearn.utils import shuffle
     df = shuffle(df)
     df.reset_index(inplace=True, drop=True)
-    print(df)
     records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:rows_for_training]].to_records(index=False)
     train_data = list(records_train)
     
