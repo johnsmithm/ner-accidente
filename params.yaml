@@ -1,13 +1,13 @@
 prepare:
     how_many_generated:
-        - 1000
+        - 800
 train:
     # % of the total rows
     for_train_procentage:
-        - 60
+        - 50
     # % of the total rows
     for_test_procentage:
-        - 40
+        - 50
     number_of_itterations:
         - 10
 
