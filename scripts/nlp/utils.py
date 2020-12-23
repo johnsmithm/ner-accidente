@@ -18,8 +18,9 @@ def bars2spacy(text_bars):
             start_len += (len(word)-3) # -3 because of the space before the word
         else:
             start_len += (len(word)+1)
-
-    return enteties_per_phrase
+    # print(enteties_per_phrase)
+    enteties_per_phrase_dict = {'entities': enteties_per_phrase}
+    return enteties_per_phrase_dict
 
 def bars2y(text_bars):
     """
@@ -151,44 +152,45 @@ def y2spacy(y, text):
     # print(spacy_format_ent)
     return spacy_format_ent
 
-def calculate_recall(y_pred, y_true):
+from sklearn.metrics import recall_score
+def calculate_recall(y_true, y_pred):
     """
     input: 
     - [0,1,0,1,0]
     - [0,1,0,1,0]
     output: 1
-    
-    
-    input: 
-    - [0,1,0,1,0]
-    - [0,1,0,0,0]
-    output: 1
-    """
-    pass
-
-def calculate_acc(y_pred, y_true):
-    """
-    input: 
-    - [0,1,0,1,0]
-    - [0,1,0,1,0]
-    output: 1
-    
     
     input: 
     - [0,1,0,1,0]
     - [0,1,0,0,0]
     output: 1
     """
-    pass
+    recall = recall_score(y_true, y_pred)
+    return recall
 
-def calculate_acc_ignore0(y_pred, y_true):
+from sklearn.metrics import accuracy_score
+def calculate_acc(y_true, y_pred):
+    """
+    input: 
+    - [0,1,0,1,0]
+    - [0,1,0,1,0]
+    output: 1
+    
+    input: 
+    - [0,1,0,1,0]
+    - [0,1,0,0,0]
+    output: 1
+    """
+    accuracy = accuracy_score(y_true, y_pred)
+    return accuracy
+
+def calculate_acc_ignore0(y_true, y_pred):
     """calculate the accuracy just for the non-zero tokens
     input: 
     - [0,1,0,1,0]
     - [0,1,0,1,0]
     output: 1
     
-    
     input: 
     - [0,1,0,1,0]
     - [0,1,0,0,0]
@@ -196,33 +198,35 @@ def calculate_acc_ignore0(y_pred, y_true):
     """
     pass
 
-def calculate_confusion_matrix(y_pred, y_true):
+from sklearn.metrics import confusion_matrix
+def calculate_confusion_matrix(y_true, y_pred):
     """
     input: 
     - [0,1,0,1,0]
     - [0,1,0,1,0]
     output: 1
-    
     
     input: 
     - [0,1,0,1,0]
     - [0,1,0,0,0]
     output: 1
     """
-    pass
+    confusion_matrix_score = confusion_matrix(y_true, y_pred)
+    return confusion_matrix_score
 
-def calculate_precision(y_pred, y_true):
+from sklearn.metrics import precision_score
+def calculate_precision(y_true, y_pred):
     """
     input: 
     - [0,1,0,1,0]
     - [0,1,0,1,0]
-    output: 1
-    
+    output: 1  
     
     input: 
     - [0,1,0,1,0]
     - [0,1,0,0,0]
     output: 1
     """
-    pass
+    precision_score_score = precision_score(y_true, y_pred)
+    return precision_score_score
 

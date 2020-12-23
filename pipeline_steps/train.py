@@ -23,7 +23,6 @@ import yaml
 params = yaml.safe_load(open('params.yaml'))['train']
 
 how_many_for_train = params['for_train_procentage'][0]
-how_many_for_test = params['for_test_procentage'][0]
 how_many_training_itterations = params['number_of_itterations'][0]
 
 
@@ -98,12 +97,10 @@ if __name__ == "__main__":
 
     # Assign to the previously created column the dictionaries with the values
     df['Entities_position'] = pd.Series(holding_dict)
- 
+    
+    rows_for_training = (int(len(df)*(how_many_for_train/100)))
 
-    rows_for_training = (int(len(df))*(how_many_for_train/100))
-    rows_for_training = int(rows_for_training)
-    rows_for_testing = (int(len(df))*(how_many_for_test/100))
-    rows_for_testing = int(rows_for_testing)
+
     
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
@@ -113,10 +110,9 @@ if __name__ == "__main__":
     records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:rows_for_training]].to_records(index=False)
     train_data = list(records_train)
     
-    records_test_real = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[rows_for_testing:rows_for_training]].to_records(index=False)
-    testing_data = list(records_test_real)
+    records_test = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[rows_for_training:len(df)]].to_records(index=False)
+    testing_data = list(records_test)
 
-    
     # MAIN TRAINING FUNCTION
     main(model='ro_core_news_lg', TRAIN_DATA=train_data, output_dir='src/models/', n_iter=how_many_training_itterations)
 

@@ -23,14 +23,14 @@ prepare:
       - 1000
   outs:
   - path: data/processed/data_processed.plk
-    md5: 46ff229509f51d316bf51ee2eebde195
-    size: 340574
+    md5: 2bb485abfd619ff9cf21de110a713d3d
+    size: 341093
 train:
   cmd: python3 pipeline_steps/train.py
   deps:
   - path: data/processed/data_processed.plk
-    md5: 46ff229509f51d316bf51ee2eebde195
-    size: 340574
+    md5: 2bb485abfd619ff9cf21de110a713d3d
+    size: 341093
   - path: pipeline_steps/train.py
     md5: b938a34629dee97d8f0f20bbca0ac5ca
     size: 4790
@@ -42,9 +42,9 @@ train:
       - 60
   outs:
   - path: metrics.json
-    md5: b4e754ad012eae87a6a042460b42c0aa
-    size: 102
+    md5: 0740318436d7417d0408e17baba3e76b
+    size: 103
   - path: src/models
-    md5: 3a2ef2094e38fa9f710b78b257a43593.dir
-    size: 635103313
+    md5: 54543505e4232c2d38a1f901082a76e3.dir
+    size: 635103010
     nfiles: 16

@@ -20,7 +20,6 @@ stages:
     - data/processed/data_processed.plk
     - pipeline_steps/train.py
     params:
-    - train.for_test_procentage
     - train.for_train_procentage
     outs:
     - src/models
