@@ -1,10 +1,10 @@
 stages:
-  # get_dataset:
-  #   cmd: python3 pipeline_steps/get_dataset.py
-  #   deps:
-  #   - pipeline_steps/get_dataset.py
-  #   outs:
-  #   - data/raw/raw_data.csv
+  get_dataset:
+    cmd: python3 pipeline_steps/get_dataset.py
+    deps:
+    - pipeline_steps/get_dataset.py
+    outs:
+    - data/raw/raw_data.csv
   prepare:
     cmd: python3 pipeline_steps/prepare.py
     deps:
