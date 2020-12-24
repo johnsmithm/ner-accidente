@@ -1,12 +1,12 @@
 prepare:
     how_many_generated:
-        - 100
+        - 1500
 train:
     # % of the total rows
     for_train_procentage:
         - 80
     number_of_itterations:
-        - 10
+        - 100
 
 
 # dvc run -n get_dataset -d pipeline_steps/get_dataset.py -o data/raw/raw_data.csv python3 pipeline_steps/get_dataset.py

@@ -20,6 +20,6 @@ jobs:
           dvc repro
           cat reports/data_quatities.json > report.md
           git fetch --prune
-          dvc metrics diff --show-md dev > report.md
+          dvc metrics diff --show-md dev >> report.md
 
           cml-send-comment report.md 
