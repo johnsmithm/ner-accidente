@@ -17,7 +17,7 @@ jobs:
           pip3 install -r requirements.txt
           python -m spacy download ro_core_news_lg
           
-          dvc repro
+          dvc repro --force
           echo "## Data Quatities && Metrics" >> report.md
           echo  >> report.md
           git fetch --prune
