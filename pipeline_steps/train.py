@@ -130,13 +130,13 @@ if __name__ == "__main__":
 
     data_quatities = {
         "Quantities": {
-            "TOTAL": len(df),
-            "TOTAL_REAL": quantity_of_real_examples,
-            "REAL_TRAIN": rows_for_training_real,
-            "REAL_TEST": rows_for_testing_real,
-            "TOTAL_GENERATED": quantity_of_generated_examples,
-            "GENERATED_TRAIN": rows_for_training_generated,
-            "GENERATED_TEST": rows_for_testing_generated
+            "Total_All": len(df),
+            "Real_Total": quantity_of_real_examples,
+            "Real_Train": rows_for_training_real,
+            "Real_Test": rows_for_testing_real,
+            "Generated_Total": quantity_of_generated_examples,
+            "Generated_Train": rows_for_training_generated,
+            "Generated_Test": rows_for_testing_generated
         } 
     }
 
