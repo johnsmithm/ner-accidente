@@ -1,1 +1,1 @@
-{"Quantities": {"Total_All": 214, "Real_Total": 103, "Real_Train": 77, "Real_Test": 26, "Generated_Total": 110, "Generated_Train": 82, "Generated_Test": 28}}
+{"Quantities": {"Training_cycles": 100, "Total_rows": 554, "Real_Total": 103, "Real_Train": 77, "Real_Test": 26, "Generated_Total": 450, "Generated_Train": 337, "Generated_Test": 113}}

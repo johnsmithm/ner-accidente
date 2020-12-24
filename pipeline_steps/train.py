@@ -130,7 +130,8 @@ if __name__ == "__main__":
 
     data_quatities = {
         "Quantities": {
-            "Total_All": len(df),
+            "Training_cycles": how_many_training_itterations,
+            "Total_rows": len(df),
             "Real_Total": quantity_of_real_examples,
             "Real_Train": rows_for_training_real,
             "Real_Test": rows_for_testing_real,
