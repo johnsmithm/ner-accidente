@@ -15,36 +15,50 @@ prepare:
     md5: 103145512816f29eaa4ee99a5f63c88e
     size: 28803
   - path: pipeline_steps/prepare.py
-    md5: dd6e38dca7b718dd54a7a8b9993a503a
-    size: 2582
+    md5: dc722bf54e7ca748d9b7c45a466f43bb
+    size: 2955
   params:
     params.yaml:
       prepare.how_many_generated:
-      - 1000
+      - 100
   outs:
   - path: data/processed/data_processed.plk
-    md5: 2bb485abfd619ff9cf21de110a713d3d
-    size: 341093
+    md5: dae7f0bed01f380605c85b10d2003739
+    size: 48832
 train:
   cmd: python3 pipeline_steps/train.py
   deps:
   - path: data/processed/data_processed.plk
-    md5: 2bb485abfd619ff9cf21de110a713d3d
-    size: 341093
+    md5: dae7f0bed01f380605c85b10d2003739
+    size: 48832
   - path: pipeline_steps/train.py
-    md5: b938a34629dee97d8f0f20bbca0ac5ca
-    size: 4790
+    md5: f47fcc447adabd42f7378b2e6c9e4412
+    size: 6354
   params:
     params.yaml:
-      train.for_test_procentage:
-      - 40
       train.for_train_procentage:
-      - 60
+      - 80
   outs:
-  - path: metrics.json
-    md5: 0740318436d7417d0408e17baba3e76b
-    size: 103
+  - path: reports/data_quatities.json
+    md5: 64136b2d1d9ef43be47ecb3f9261d02b
+    size: 153
   - path: src/models
-    md5: 54543505e4232c2d38a1f901082a76e3.dir
-    size: 635103010
+    md5: 8ab3473a2309dcd5ac3371e4e8adf933.dir
+    size: 635100810
     nfiles: 16
+test_model:
+  cmd: python3 pipeline_steps/test_model.py
+  deps:
+  - path: data/processed/all_records_test_generated.plk
+    md5: 0e77c6dd69c42027fd87096aba0712fb
+    size: 4494
+  - path: data/processed/all_records_test_real.plk
+    md5: 6066432c887a13bffd278f06a6bbc0e3
+    size: 5561
+  - path: pipeline_steps/test_model.py
+    md5: abb0fa472b3f687224a15d6159e9115f
+    size: 1183
+  outs:
+  - path: reports/metrics.json
+    md5: 0e97d2d9f9e667b1738ba707c5926aa9
+    size: 194

@@ -76,7 +76,6 @@ def main(model=None,TRAIN_DATA=None , output_dir=None, n_iter=100):
 if __name__ == "__main__":
 
 
-
     import os
     import sys
     sys.path.insert(0, "src")
@@ -86,53 +85,64 @@ if __name__ == "__main__":
     df = pd.read_pickle(path)
 
     df['text_no_sw_no_bars'] = df['text_no_sw'].str.replace('|','')
-    
     from nlp.pptext import split_and_save_to_new_column
     holding_dict = split_and_save_to_new_column(df['text_no_sw'])
-
-
     ## Insert our data in spacy training format into the df column 'Training_format'
     if 'Entities_position' in df.columns:
         df = df.drop(columns='Entities_position')
+    df['Entities_position'] = pd.Series(holding_dict)
 
     # Assign to the previously created column the dictionaries with the values
-    df['Entities_position'] = pd.Series(holding_dict)
-    
-    rows_for_training = (int(len(df)*(how_many_for_train/100)))
-
-
+    quantity_of_real_examples = len(df[df.y == 1])
+    # print('quantity_of_real_examples',quantity_of_real_examples)
+    quantity_of_generated_examples = len(df[df.y == 2])
+    # print('quantity_of_generated_examples',quantity_of_generated_examples)
+    #################################################################
+    rows_for_training_real = (int(quantity_of_real_examples*(how_many_for_train/100)))
+    rows_for_testing_real = quantity_of_real_examples - rows_for_training_real
+    # print('REAL',rows_for_training_real,rows_for_testing_real)
+    #################################################################
+    rows_for_training_generated = (int(quantity_of_generated_examples*(how_many_for_train/100)))
+    rows_for_testing_generated = quantity_of_generated_examples - rows_for_training_generated
+    # print('GENE',rows_for_training_generated,rows_for_testing_generated)
+    #################################################################
     
     ## Deviding the Training-Set from the testing set
     # join half of the real phrases with half of the generated ones for both training and testing
-    from sklearn.utils import shuffle
-    df = shuffle(df)
-    df.reset_index(inplace=True, drop=True)
-    records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:rows_for_training]].to_records(index=False)
+
+    # print('len(df)',len(df))
+    records_train = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[0:rows_for_training_real, quantity_of_real_examples:(quantity_of_real_examples+rows_for_training_generated)]].to_records(index=False)
     train_data = list(records_train)
+    # print('len(train_data)',len(train_data))
     
-    records_test = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[rows_for_training:len(df)]].to_records(index=False)
+    records_test = df[['text_no_sw_no_bars','Entities_position']].iloc[np.r_[rows_for_training_real:quantity_of_real_examples, (quantity_of_real_examples+rows_for_training_generated):len(df)]].to_records(index=False)
     testing_data = list(records_test)
+    # print('len(records_test)',len(testing_data))
+
+    all_records_test_real = df[['text_no_sw_no_bars','Entities_position']][rows_for_training_real:quantity_of_real_examples].to_records(index=False)
+    df2 = pd.DataFrame.from_records(all_records_test_real)
+    df2.to_pickle('data/processed/all_records_test_real.plk', protocol=3)
+    #################################################################
+    all_records_test_generated = df[['text_no_sw_no_bars','Entities_position']][(quantity_of_real_examples+rows_for_training_generated):len(df)].to_records(index=False)
+    df3 = pd.DataFrame.from_records(all_records_test_generated)
+    df3.to_pickle('data/processed/all_records_test_generated.plk', protocol=3)
+
+
+    data_quatities = {
+        "Quantities": {
+            "TOTAL": len(df),
+            "TOTAL_REAL": quantity_of_real_examples,
+            "REAL_TRAIN": rows_for_training_real,
+            "REAL_TEST": rows_for_testing_real,
+            "TOTAL_GENERATED": quantity_of_generated_examples,
+            "GENERATED_TRAIN": rows_for_training_generated,
+            "GENERATED_TEST": rows_for_testing_generated
+        } 
+    }
+
+    import json
+    with open("reports/data_quatities.json", 'w') as quant_file:
+        json.dump(data_quatities, quant_file)
 
     # MAIN TRAINING FUNCTION
     main(model='ro_core_news_lg', TRAIN_DATA=train_data, output_dir='src/models/', n_iter=how_many_training_itterations)
-
-############
-
-    # Evaluating the model
-    ###########################
-    import json
-    from nlp.evaluate import evaluate
-    
-    nlp = spacy.load('src/models')
-    ##########################################
-    results = evaluate(nlp, testing_data)
-
-    data = {
-        "Metrics": {
-            "Precision": results['ents_p'],
-            "Recall": results['ents_r'],
-            "FScore": results['ents_f']
-        }
-    }
-    with open("metrics.json", 'w') as outfile:
-        json.dump(data,outfile)
