@@ -1,6 +1,6 @@
 prepare:
     how_many_generated:
-        - 1500
+        - 450
 train:
     # % of the total rows
     for_train_procentage:
