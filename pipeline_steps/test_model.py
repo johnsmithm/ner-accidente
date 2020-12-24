@@ -25,12 +25,12 @@ results_real = evaluate(nlp, testing_data_real)
 results_generated = evaluate(nlp, testing_data_generated)
 
 data = {
-    "REAL": {
+    "Real": {
         "Precision": results_real['ents_p'],
         "Recall": results_real['ents_r'],
         "FScore": results_real['ents_f']
     },
-    "GENERATED": {
+    "Generated": {
         "Precision": results_generated['ents_p'],
         "Recall": results_generated['ents_r'],
         "FScore": results_generated['ents_f']

@@ -16,9 +16,11 @@ jobs:
         run: |
           pip3 install -r requirements.txt
           python -m spacy download ro_core_news_lg
-
+          
           dvc repro
-          cat reports/data_quatities.json > report.md
+          echo "## Data Quatities" >> report.md
+          cat reports/data_quatities.json >> report.md
+          echo "## Model metrics" >> report.md
           git fetch --prune
           dvc metrics diff --show-md dev >> report.md
 
