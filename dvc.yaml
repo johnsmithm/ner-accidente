@@ -29,8 +29,6 @@ stages:
   test_model:
     cmd: python3 pipeline_steps/test_model.py
     deps:
-    - data/processed/all_records_test_real.plk
-    - data/processed/all_records_test_generated.plk
     - pipeline_steps/test_model.py
     metrics:
     - reports/metrics.json:
