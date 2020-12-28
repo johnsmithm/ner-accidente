@@ -20,31 +20,31 @@ prepare:
   params:
     params.yaml:
       prepare.how_many_generated:
-      - 450
+      - 200
   outs:
   - path: data/processed/data_processed.plk
-    md5: c1e7d18fa31621a75aa6bb7844948b11
-    size: 107354
+    md5: ac44734ee418f808c6a59aeeb43b33ad
+    size: 66424
 train:
   cmd: python3 pipeline_steps/train.py
   deps:
   - path: data/processed/data_processed.plk
-    md5: c1e7d18fa31621a75aa6bb7844948b11
-    size: 107354
+    md5: ac44734ee418f808c6a59aeeb43b33ad
+    size: 66424
   - path: pipeline_steps/train.py
     md5: 69b68ad5550d5491f566c2b9b8f467b4
     size: 6420
   params:
     params.yaml:
       train.for_train_procentage:
-      - 75
+      - 80
   outs:
   - path: reports/data_quatities.json
-    md5: 2c71f96068afb1fd791fd7ab4ac41617
-    size: 184
+    md5: ed74cbb3bfefdcda77666c1dbc83b026
+    size: 183
   - path: src/models
-    md5: 52862157af4e422736eb2646ca24e6d7.dir
-    size: 635102315
+    md5: 98cba9f50e1077d284eb1bc506010c26.dir
+    size: 635101795
     nfiles: 16
 test_model:
   cmd: python3 pipeline_steps/test_model.py
