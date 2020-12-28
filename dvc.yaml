@@ -31,11 +31,16 @@ stages:
   test_model:
     cmd: python3 pipeline_steps/test_model.py
     deps:
+    - src/models
     - data/processed/all_records_test_real.plk
     - data/processed/all_records_test_generated.plk
     - pipeline_steps/test_model.py
     metrics:
     - reports/metrics.json:
+        cache: false
+    - reports/generated_FALSE.json:
+        cache: false
+    - reports/real_FALSE.json:
         cache: false
 
 

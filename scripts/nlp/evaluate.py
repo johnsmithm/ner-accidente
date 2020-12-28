@@ -58,26 +58,33 @@ Extract the possition 2,3 and 4,5 from the  [(2,3,'POS'), (4,5,'POS')]
 """
 def extract_pos(column):
     single_positions = []
-    if len(column) == 1:
-        column = [column[0][0],column[0][1]]
-        single_positions.append(column)
-        column = single_positions
-    elif len(column) > 1:
-        multiple_positions = []
-        for pos in range(len(column)):
-            poss = [column[pos][0],column[pos][1]]
-            multiple_positions.append(poss)
-        column = multiple_positions
-    return column
+    while isinstance(column, list):
+        if len(column) == 1:
+            column = [column[0][0],column[0][1]]
+            single_positions.append(column)
+            column = single_positions
+        elif len(column) > 1:
+            multiple_positions = []
+            for pos in range(len(column)):
+                poss = [column[pos][0],column[pos][1]]
+                multiple_positions.append(poss)
+            column = multiple_positions
+        else:
+            column = []
+        print(column)
+        return column
 
 """ 
 Extract the words based on their position within the string 
 """
-def extract_word(position):    
+def extract_word(position):
     whole_phrase = position[0]
     word_position = position[1]
     extracted_word_list = []
-    if len(word_position) == 1:
+
+    if word_position is None:
+        position = []
+    elif len(word_position) == 1:
         extracted_word = whole_phrase[word_position[0][0]:word_position[0][1]]
         extracted_word_list.append(extracted_word)
         position = extracted_word_list

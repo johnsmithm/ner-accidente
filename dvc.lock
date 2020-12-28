@@ -15,22 +15,22 @@ prepare:
     md5: 103145512816f29eaa4ee99a5f63c88e
     size: 28803
   - path: pipeline_steps/prepare.py
-    md5: dc722bf54e7ca748d9b7c45a466f43bb
-    size: 2955
+    md5: 5db8ace8d700855f3f0c0e1561260275
+    size: 2956
   params:
     params.yaml:
       prepare.how_many_generated:
-      - 200
+      - 150
   outs:
   - path: data/processed/data_processed.plk
-    md5: ac44734ee418f808c6a59aeeb43b33ad
-    size: 66424
+    md5: f4798286f0594ff05bbb01e1d9d5bf40
+    size: 57142
 train:
   cmd: python3 pipeline_steps/train.py
   deps:
   - path: data/processed/data_processed.plk
-    md5: ac44734ee418f808c6a59aeeb43b33ad
-    size: 66424
+    md5: f4798286f0594ff05bbb01e1d9d5bf40
+    size: 57142
   - path: pipeline_steps/train.py
     md5: 69b68ad5550d5491f566c2b9b8f467b4
     size: 6420
@@ -39,20 +39,42 @@ train:
       train.for_train_procentage:
       - 80
   outs:
+  - path: data/processed/all_records_test_generated.plk
+    md5: ba9f6e4ffe334dc8daa78e0dfbe4da49
+    size: 6870
+  - path: data/processed/all_records_test_real.plk
+    md5: 6066432c887a13bffd278f06a6bbc0e3
+    size: 5561
   - path: reports/data_quatities.json
-    md5: ed74cbb3bfefdcda77666c1dbc83b026
-    size: 183
+    md5: 3e0f7724275cbb61e24ac291007685a6
+    size: 182
   - path: src/models
-    md5: 98cba9f50e1077d284eb1bc506010c26.dir
-    size: 635101795
+    md5: c83fedcffc9503758cd31f389c3492f5.dir
+    size: 635101342
     nfiles: 16
 test_model:
   cmd: python3 pipeline_steps/test_model.py
   deps:
+  - path: data/processed/all_records_test_generated.plk
+    md5: ba9f6e4ffe334dc8daa78e0dfbe4da49
+    size: 6870
+  - path: data/processed/all_records_test_real.plk
+    md5: 6066432c887a13bffd278f06a6bbc0e3
+    size: 5561
   - path: pipeline_steps/test_model.py
-    md5: f65d3c428765a757e4606c6af3797085
-    size: 1183
+    md5: 50c806d98387d5e39859799e245cecee
+    size: 4827
+  - path: src/models
+    md5: c83fedcffc9503758cd31f389c3492f5.dir
+    size: 635101342
+    nfiles: 16
   outs:
+  - path: reports/generated_FALSE.json
+    md5: ebfa38bfb3e93cacfe7212bcdc727191
+    size: 5437
   - path: reports/metrics.json
-    md5: 5726d6e678f2a9226bcb7b293d4e1449
-    size: 205
+    md5: 830507a5db6df8952f20bb810b4edab4
+    size: 204
+  - path: reports/real_FALSE.json
+    md5: 73c8c4dd0c588619d887962b9a1abf7a
+    size: 4994
