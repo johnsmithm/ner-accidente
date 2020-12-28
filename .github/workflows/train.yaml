@@ -22,5 +22,7 @@ jobs:
           echo  >> report.md
           git fetch --prune
           dvc metrics diff --show-md dev >> report.md
-
-          cml-send-comment report.md 
+          echo "## Type I && Type II errors" >> report.md
+          cat reports/real_TYPE_I_and_II.json >> report.md
+          cat reports/generated_TYPE_I_and_II.json >> report.md
+          cml-send-comment report.md

@@ -35,12 +35,11 @@ stages:
     - data/processed/all_records_test_real.plk
     - data/processed/all_records_test_generated.plk
     - pipeline_steps/test_model.py
+    outs:
+    - reports/real_TYPE_I_and_II.json
+    - reports/generated_TYPE_I_and_II.json
     metrics:
     - reports/metrics.json:
-        cache: false
-    - reports/real_TYPE_I_and_II.json:
-        cache: false
-    - reports/generated_TYPE_I_and_II.json:
         cache: false
 
 
