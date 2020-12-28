@@ -22,6 +22,8 @@ stages:
     params:
     - train.for_train_procentage
     outs:
+    - data/processed/all_records_test_real.plk
+    - data/processed/all_records_test_generated.plk
     - src/models
     metrics:
     - reports/data_quatities.json:
@@ -29,6 +31,8 @@ stages:
   test_model:
     cmd: python3 pipeline_steps/test_model.py
     deps:
+    - data/processed/all_records_test_real.plk
+    - data/processed/all_records_test_generated.plk
     - pipeline_steps/test_model.py
     metrics:
     - reports/metrics.json:
