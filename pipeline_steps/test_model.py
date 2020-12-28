@@ -109,12 +109,5 @@ df3.drop(df3.columns.difference(['PHRASE_WRONG_generated','false_positive_words_
 # pd.set_option('display.max_rows', 100) 
 print(df2)
 print(df3)
-df2_in_json = df2.to_json(orient="table")
-df3_in_json = df3.to_json(orient="table")
-
-with open("reports/real_FALSE.json", 'w') as outfile2:
-    json.dump(df2_in_json,outfile2)
-
-
-with open("reports/generated_FALSE.json", 'w') as outfile3:
-    json.dump(df3_in_json,outfile3)
+df2_in_json = df2.to_json("reports/real_TYPE_I_and_II.json")
+df3_in_json = df3.to_json("reports/generated_TYPE_I_and_II.json")

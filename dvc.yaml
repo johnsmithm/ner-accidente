@@ -38,9 +38,9 @@ stages:
     metrics:
     - reports/metrics.json:
         cache: false
-    - reports/generated_FALSE.json:
+    - reports/real_TYPE_I_and_II.json:
         cache: false
-    - reports/real_FALSE.json:
+    - reports/generated_TYPE_I_and_II.json:
         cache: false
 
 
