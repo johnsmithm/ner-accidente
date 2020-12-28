@@ -37,8 +37,7 @@ data = {
     }
 }
 
-with open("reports/metrics.json", 'w') as outfile:
-    json.dump(data,outfile)
+
 
 ## Get accuracy by testing the whole testing_set(real + generated)
 # dict_with_phrases, dict_false_positive, dict_false_negative =  check_accuracy(testing_data, model=nlp, test_set_name='All')
@@ -111,3 +110,7 @@ print(df2)
 print(df3)
 df2_in_json = df2.to_json("reports/real_TYPE_I_and_II.json")
 df3_in_json = df3.to_json("reports/generated_TYPE_I_and_II.json")
+
+
+with open("reports/metrics.json", 'w') as outfile:
+    json.dump(data,outfile)

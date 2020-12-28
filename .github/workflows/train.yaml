@@ -20,10 +20,11 @@ jobs:
           dvc repro --force
           echo "## Data Quatities && Metrics" >> report.md
           echo  >> report.md
-          git fetch --prune
-          dvc metrics diff --show-md dev >> report.md
           
           echo "## Type I && Type II errors" >> report.md
           cat reports/real_TYPE_I_and_II.json | reports/generated_TYPE_I_and_II.json --md >> report.md
-
+          
+          git fetch --prune
+          dvc metrics diff --show-md dev >> report.md
+          
           cml-send-comment report.md
