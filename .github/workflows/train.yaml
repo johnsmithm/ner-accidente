@@ -21,10 +21,12 @@ jobs:
           echo "## Data Quatities && Metrics" >> report.md
           echo  >> report.md
           
-          echo "## Type I && Type II errors" >> report.md
-          cat reports/real_TYPE_I_and_II.json >> report.md
-          cat reports/generated_TYPE_I_and_II.json >> report.md
+          echo "## Type I errors \n" >> report.md
+          cat te1.txt >> report.md
+          echo "## Type II errors \n" >> report.md
+          cat te2.txt >> report.md
           
+          echo "## metrics \n" >> report.md
           git fetch --prune
           dvc metrics diff --show-md dev >> report.md
           
