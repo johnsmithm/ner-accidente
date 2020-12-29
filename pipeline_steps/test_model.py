@@ -111,6 +111,34 @@ print(df3)
 df2_in_json = df2.to_json("reports/real_TYPE_I_and_II.json")
 df3_in_json = df3.to_json("reports/generated_TYPE_I_and_II.json")
 
+def f(dict_with_phrases_real, other):
+    te= ''
+    for r,f in zip(dict_with_phrases_real.values(), other.values()):
+        op = []
+        cl = []
+        for o,c,_ in f:
+            op.append(o)
+            cl.append(c)
+        o = ''
+        for i,c in enumerate(r):
+            if i in op:
+                o += '{'
+            if i in cl:
+                o += '}'
+            o+=c
+        print(o)
+        print()
+        te+= o+'\n\n'
+    return te
+
+te1 = f(dict_with_phrases_real, dict_false_positive_real)
+te2 = f(dict_with_phrases_real, dict_false_negative_real)
+
+with open('te1.txt', 'a') as the_file:
+    the_file.write(te1)
+    
+with open('te2.txt', 'a') as the_file:
+    the_file.write(te2)
 
 with open("reports/metrics.json", 'w') as outfile:
     json.dump(data,outfile)
