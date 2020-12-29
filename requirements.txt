@@ -7,3 +7,9 @@ pytest
 pytest-cookies
 pytest-cov
 sphinx
+spacy
+sklearn
+dvc
+pydrive2
+gdown
+pyyaml 

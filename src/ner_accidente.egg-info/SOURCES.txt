@@ -1,0 +1,12 @@
+README.md
+setup.py
+src/ner_accidente.egg-info/PKG-INFO
+src/ner_accidente.egg-info/SOURCES.txt
+src/ner_accidente.egg-info/dependency_links.txt
+src/ner_accidente.egg-info/requires.txt
+src/ner_accidente.egg-info/top_level.txt
+src/neraccidente/__init__.py
+src/neraccidente/examplemodule.py
+src/neraccidente/features.py
+src/neraccidente/io.py
+src/neraccidente/pipeline.py

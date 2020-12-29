@@ -1,149 +1,64 @@
-#!/usr/bin/env python
+# coding: utf8
+"""Example of training spaCy's named entity recognizer, starting off with an
+existing model or a blank model.
 
-"""Train a model.
+For more details, see the documentation:
+* Training: https://spacy.io/usage/training
+* NER: https://spacy.io/usage/linguistic-features#named-entities
 
-Argv:
-    output-dir: A folder to store any output to
-    kernel: Kernel type to be used in the algorithm
-    penalty: Penalty parameter of the error term
+Compatible with: spaCy v2.0.0+
+Last tested with: v2.2.4
 """
-import argparse
-import joblib
-import matplotlib.pyplot as plt
-import numpy as np
-import os
-import sys
 
-from sklearn import datasets
-from sklearn.metrics import classification_report
-from sklearn.metrics import plot_confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import StratifiedKFold
-from sklearn.svm import SVC
+import random
+import warnings
+from pathlib import Path
+import spacy
+from spacy.util import minibatch, compounding
 
-from amlrun import get_AMLRun
+# Use built-in "ner" pipeline components
+nlp = spacy.load("ro_core_news_lg")
+ner = nlp.get_pipe("ner")
 
+def main(model=None,TRAIN_DATA=None , output_dir=None, n_iter=100):
 
-def train(output_dir='outputs', kernel='linear', penalty=1.0):
-    # make sure output directory exist
-    os.makedirs(output_dir, exist_ok=True)
+    # add labelsmodel
+    for _, annotations in TRAIN_DATA:
+        for ent in annotations.get("entities"):
+            ner.add_label(ent[2])
 
-    # Safely get the Azure ML run
-    run = get_AMLRun()
+    print("Started Training")
+    # get names of other pipes to disable them during training
+    pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+    other_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
+    # only train NER
+    with nlp.disable_pipes(*other_pipes), warnings.catch_warnings():
+        # show warnings for misaligned entity spans once
+        warnings.filterwarnings("once", category=UserWarning, module='spacy')
 
-    # loading the iris dataset
-    iris = datasets.load_iris()
+        # reset and initialize the weights randomly – but only if we're
+        # training a new model
+        if model is None:
+            nlp.begin_training()
+        for itn in range(n_iter):
+            random.shuffle(TRAIN_DATA)
+            losses = {}
+            # batch up the examples using spaCy's minibatch
+            batches = minibatch(TRAIN_DATA, size=compounding(4.0, 32.0, 1.001))
+            for batch in batches:
+                texts, annotations = zip(*batch)
+                nlp.update(
+                    texts,  # batch of texts
+                    annotations,  # batch of annotations
+                    drop=0.5,  # dropout - make it harder to memorise data
+                    losses=losses,
+                )
+            print("Losses", losses)
 
-    # X -> features, y -> label
-    X = iris.data
-    y = iris.target
-    class_names = iris.target_names
-
-    # dividing X, y into train and test data. Random seed for reproducability
-    X_train, X_test, y_train, y_test = \
-        train_test_split(X, y, test_size=0.20, random_state=0)
-
-    # create our model - a linear SVM classifier
-    svm_model_linear = SVC(kernel=kernel, C=penalty)
-
-    # evaluate each model in turn
-    kfold = StratifiedKFold(n_splits=10, random_state=1)
-    cv_results = cross_val_score(svm_model_linear, X_train, y_train,
-                                 cv=kfold, scoring='accuracy')
-
-    print('Cross Validation Mean: ', cv_results.mean())
-    print('Cross Validation Std: ', cv_results.std())
-    if run is not None:
-        run.log_list('Cross Validation Accuracies', cv_results)
-        run.log('Cross Validation Mean', cv_results.mean())
-        run.log('Cross Validation Std', cv_results.std())
-
-    # now training on the full dataset
-    svm_model_linear.fit(X_train, y_train)
-    y_pred = svm_model_linear.predict(X_test)
-
-    # model accuracy for X_test
-    accuracy = svm_model_linear.score(X_test, y_test)
-    print('Accuracy of SVM classifier on test set: {:.2f}'.format(accuracy))
-    if run is not None:
-        run.log('Accuracy', np.float(accuracy))
-
-    # Plot non-normalized confusion matrix
-    title = 'Test confusion matrix'
-    disp = plot_confusion_matrix(svm_model_linear, X_test, y_test,
-                                 display_labels=class_names,
-                                 cmap=plt.cm.Blues)
-    disp.ax_.set_title(title)
-    print(title)
-    print(disp.confusion_matrix)
-
-    if run is not None:
-        run.log_image(title, plot=plt)
-    else:
-        plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
-
-    # Plot normalized confusion matrix
-    title = 'Normalized test confusion matrix'
-    disp = plot_confusion_matrix(svm_model_linear, X_test, y_test,
-                                 display_labels=class_names,
-                                 cmap=plt.cm.Blues,
-                                 normalize='true')
-    disp.ax_.set_title(title)
-    print(title)
-    print(disp.confusion_matrix)
-
-    if run is not None:
-        run.log_image(title,  plot=plt)
-    else:
-        plt.savefig(
-            os.path.join(output_dir, 'confusion_matrix_normalised.png'))
-
-    # Print classification report
-    print(classification_report(y_test, y_pred))
-
-    # files saved in the "outputs" folder are automatically uploaded into
-    # Azure ML Service run history
-    model_folder = os.path.join(output_dir, 'model')
-    model_path = os.path.join(model_folder, 'ner-accidente.joblib')
-    os.makedirs(model_folder, exist_ok=True)
-    joblib.dump(svm_model_linear, model_path)
-    print('Output saved to', output_dir)
-
-
-def main(arguments):
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    # environment parameters
-    # parser.add_argument(
-    #     '--data-folder',
-    #     help="local path to training data",
-    #     required=True
-    # )
-
-    parser.add_argument(
-        "--output-dir", type=str,
-        default=os.path.join('..', '..', 'data', 'training', 'outputs'),
-        help='location to write output'
-    )
-
-    # training specific parameters
-    parser.add_argument('--kernel', type=str, default='linear',
-                        help='Kernel type to be used in the algorithm')
-    parser.add_argument('--penalty', type=float, default=1.0,
-                        help='Penalty parameter of the error term')
-
-    # parse the arguments
-    args = parser.parse_args(arguments)
-
-    # setup output directory
-    # model_output_dir = os.path.join(
-    #     os.path.dirname(os.path.realpath(__file__)),
-    #     args.output_dir)
-    # os.makedirs(args.output-dir, exist_ok=True)
-
-    train(args.output_dir, args.kernel, args.penalty)
-
-
-if __name__ == '__main__':
-    sys.exit(main(sys.argv[1:]))
+    # save model to output directory
+    if output_dir is not None:
+        output_dir = Path(output_dir)
+        if not output_dir.exists():
+            output_dir.mkdir()
+        nlp.to_disk(output_dir)
+        print("Saved model to", output_dir)

@@ -1,0 +1,45 @@
+stages:
+  get_dataset:
+    cmd: python3 pipeline_steps/get_dataset.py
+    deps:
+    - pipeline_steps/get_dataset.py
+    outs:
+    - data/raw/raw_data.csv
+  prepare:
+    cmd: python3 pipeline_steps/prepare.py
+    deps:
+    - data/raw/raw_data.csv
+    - pipeline_steps/prepare.py
+    params:
+    - prepare.how_many_generated
+    outs:
+    - data/processed/data_processed.plk
+  train:
+    cmd: python3 pipeline_steps/train.py
+    deps:
+    - data/processed/data_processed.plk
+    - pipeline_steps/train.py
+    params:
+    - train.for_train_procentage
+    outs:
+    - data/processed/all_records_test_real.plk
+    - data/processed/all_records_test_generated.plk
+    - src/models
+    metrics:
+    - reports/data_quatities.json:
+        cache: false
+  test_model:
+    cmd: python3 pipeline_steps/test_model.py
+    deps:
+    - src/models
+    - data/processed/all_records_test_real.plk
+    - data/processed/all_records_test_generated.plk
+    - pipeline_steps/test_model.py
+    outs:
+    - reports/real_TYPE_I_and_II.json
+    - reports/generated_TYPE_I_and_II.json
+    metrics:
+    - reports/metrics.json:
+        cache: false
+
+

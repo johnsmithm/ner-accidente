@@ -1,0 +1,36 @@
+prepare:
+    how_many_generated:
+        - 150
+train:
+    # % of the total rows
+    for_train_procentage:
+        - 80
+    number_of_itterations:
+        - 10
+
+
+# dvc run -n get_dataset -d pipeline_steps/get_dataset.py -o data/raw/raw_data.csv python3 pipeline_steps/get_dataset.py
+
+# dvc run -n prepare -p prepare.how_many_generated -d pipeline_steps/prepare.py -d data/raw/raw_data.csv -o data/processed/data_processed.plk python3 pipeline_steps/prepare.py
+
+# dvc run -n train_model -p train.for_train_procentage -p train.for_test_procentage -d pipeline_steps/train.py -d data/processed/data_processed.plk -o src/models python3 pipeline_steps/train.py
+
+
+
+  # prepare:
+  #   cmd: python3 prepare.py
+  #   deps:
+  #   - prepare.py
+  #   - data/raw/raw_data.csv
+  #   outs:
+  #   - data/processed/data_processed.plk
+  # train_model:
+  #   cmd: python3 train.py
+  #   deps:
+  #   - train.py
+  #   - data/processed/data_processed.plk
+  #   outs:
+  #   - src/models
+  #   metrics:
+  #   - metrics.txt:
+  #       cache: false
